@@ -1,3 +1,7 @@
+@interface UIImage ()
+	- (id)sbf_resizeImageToSize:(CGSize)arg1;
+@end
+
 @interface SBApplication
 	- (id)icon:(id)arg1 imageWithFormat:(int)arg2;
 @end
@@ -21,16 +25,20 @@ static NSString *bundleID = nil;
 %hook NCNotificationContent
 
 	- (NSArray *)icons {
-		UIImage* icons[] = {[[[%c(SBApplicationController) sharedInstance]
+		NSArray *icons = %orig;
+		if([icons count] == 0) return icons;
+		UIImage *image = (UIImage *)icons[0];
+		CGSize size = image.size;
+		return @[[[[[%c(SBApplicationController) sharedInstance]
 			applicationWithBundleIdentifier: bundleID] icon: nil
-			imageWithFormat: 5]};
-		return [NSArray arrayWithObjects: icons count: 1];
+			imageWithFormat: 0] sbf_resizeImageToSize: size]];
 	}
 
 	- (UIImage *)icon {
+		if(@available(iOS 12.0, *)) return %orig;
 		return [[[%c(SBApplicationController) sharedInstance]
 			applicationWithBundleIdentifier: bundleID] icon: nil
 			imageWithFormat: 5];
-	}
+}
 
 %end
