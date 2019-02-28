@@ -27,4 +27,10 @@ static NSString *bundleID = nil;
 		return [NSArray arrayWithObjects: icons count: 1];
 	}
 
+	- (UIImage *)icon {
+		return [[[%c(SBApplicationController) sharedInstance]
+			applicationWithBundleIdentifier: bundleID] icon: nil
+			imageWithFormat: 5];
+	}
+
 %end
