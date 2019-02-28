@@ -1,0 +1,9 @@
+Package: com.dunkston.themednotificationfix
+Name: Themed Notification Fix
+Depends: mobilesubstrate
+Version: 1.0
+Architecture: iphoneos-arm
+Description: Makes your notifications display themed icons instead of stock ones
+Maintainer: dunkston
+Author: dunkston
+Section: Tweaks
