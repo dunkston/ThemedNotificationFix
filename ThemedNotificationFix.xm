@@ -11,18 +11,27 @@
 	- (SBApplication *)applicationWithBundleIdentifier:(id)arg1;
 @end
 
-static NSString *bundleID = nil;
+@interface NCNotificationRequest
+	@property (nonatomic,copy,readonly) NSString * sectionIdentifier;
+@end
+
+@interface NCNotificationContent
+	@property (assign, nonatomic) NSString * bundleIdentifier;
+@end
 
 %hook NCNotificationRequest
 
-	- (NSString *)sectionIdentifier {
-		bundleID = [NSString stringWithString: %orig];
-		return bundleID;
+	- (NCNotificationContent *)content {
+		NCNotificationContent *content = %orig;
+		content.bundleIdentifier = self.sectionIdentifier;
+		return content;
 	}
 
 %end
 
 %hook NCNotificationContent
+
+%property (assign, nonatomic) NSString * bundleIdentifier;
 
 	- (NSArray *)icons {
 		NSArray *icons = %orig;
@@ -30,14 +39,14 @@ static NSString *bundleID = nil;
 		UIImage *image = (UIImage *)icons[0];
 		CGSize size = image.size;
 		return @[[[[[%c(SBApplicationController) sharedInstance]
-			applicationWithBundleIdentifier: bundleID] icon: nil
+			applicationWithBundleIdentifier: self.bundleIdentifier] icon: nil
 			imageWithFormat: 0] sbf_resizeImageToSize: size]];
 	}
 
 	- (UIImage *)icon {
 		if(@available(iOS 12.0, *)) return %orig;
 		return [[[%c(SBApplicationController) sharedInstance]
-			applicationWithBundleIdentifier: bundleID] icon: nil
+			applicationWithBundleIdentifier: self.bundleIdentifier] icon: nil
 			imageWithFormat: 5];
 }
 
