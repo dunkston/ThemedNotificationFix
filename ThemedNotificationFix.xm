@@ -38,16 +38,18 @@
 		if([icons count] == 0) return icons;
 		UIImage *image = (UIImage *)icons[0];
 		CGSize size = image.size;
-		return @[[[[[%c(SBApplicationController) sharedInstance]
-			applicationWithBundleIdentifier: self.bundleIdentifier] icon: nil
-			imageWithFormat: 0] sbf_resizeImageToSize: size]];
+		SBApplication *app = [[%c(SBApplicationController) sharedInstance]
+			applicationWithBundleIdentifier: self.bundleIdentifier];
+		if(app) return @[[[app icon: nil imageWithFormat: 0] sbf_resizeImageToSize: size]];
+		return icons;
 	}
 
 	- (UIImage *)icon {
 		if(@available(iOS 12.0, *)) return %orig;
-		return [[[%c(SBApplicationController) sharedInstance]
-			applicationWithBundleIdentifier: self.bundleIdentifier] icon: nil
-			imageWithFormat: 5];
+		SBApplication *app = [[%c(SBApplicationController) sharedInstance]
+			applicationWithBundleIdentifier: self.bundleIdentifier];
+		if(app) return [app icon: nil imageWithFormat: 5];
+		return %orig;
 }
 
 %end
